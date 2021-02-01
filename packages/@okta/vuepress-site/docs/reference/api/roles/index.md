@@ -287,7 +287,6 @@ curl -v -X POST \
       "label": "SF-IT-People",
       "description": "People in the IT department of San Francisco",
       "resources": [
-        "https://${yourOktaDomain}/api/v1/users/00uuk41Hjga5qGfQ30g3", // a user
         "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3", // a group
         "https://${yourOktaDomain}/api/v1/groups/00gu67DU2qNCjNZYO0g3/users", // users within a group
         "https://${yourOktaDomain}/api/v1/users", // all users
@@ -300,7 +299,7 @@ curl -v -X POST \
 
 ```json
 {
-  "id": "iamoJDFKaJxGIr0oamd9g"
+  "id": "iamoJDFKaJxGIr0oamd9g",
   "label": "SF-IT-People",
   "description": "People in the IT department of San Francisco",
   "_links": {
@@ -315,6 +314,665 @@ curl -v -X POST \
     }
   }
 }
+```
+
+### Get resource set
+<ApiOperation method="get" url="/api/v1/iam/resource-sets/${resourceSetId}" />
+
+Get a resource set by its id
+
+#### Request parameters
+
+| Parameter     | Description                          | Param Type   | DataType                    | Required |
+| :------------ | :----------------------------------- | :----------- | :----------------------------------------------- | :------- |
+| resourceSetId | Unique id of the resource set        | URL          | String                                           | TRUE     |
+
+#### Response parameters
+
+Requested [resource set](#resource-set-object)
+
+#### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+```
+
+#### Response example
+
+```json
+{
+  "id": "iamoJDFKaJxGIr0oamd9g",
+  "label": "SF-IT-People",
+  "description": "People in the IT department of San Francisco",
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    },
+    "resources": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+    },
+    "bindings": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+    }
+  }
+}
+```
+
+### Update resource set
+<ApiOperation method="put" url="/api/v1/iam/resource-sets/${resourceSetId}" />
+
+Update label and description of a resource set
+
+#### Request parameters
+
+| Parameter     | Description                               | Param Type   | DataType     | Required |
+| :------------ | :---------------------------------------- | :----------- | :----------- | :------- |
+| resourceSetId | Unique id of the resource set             | URL          | String       | TRUE     |
+| label         | New unique name given to the resource set | Body         | String       | TRUE     |
+| description   | New description of the the resource set   | Body         | String       | TRUE     |
+
+#### Response parameters
+
+Updated [resource set](#resource-set-object)
+
+#### Request example
+
+```bash
+curl -v -X PUT \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+      "label": "SF-IT-Staff",
+      "description": "Staff in the IT department of San Francisco"
+    }' "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+```
+
+#### Response example
+
+```json
+{
+  "id": "iamoJDFKaJxGIr0oamd9g",
+  "label": "SF-IT-Staff",
+  "description": "Staff in the IT department of San Francisco",
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    },
+    "resources": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+    },
+    "bindings": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+    }
+  }
+}
+```
+
+### Delete resource set
+<ApiOperation method="delete" url="/api/v1/iam/resource-sets/${resourceSetId}" />
+
+Deletes a resource set
+
+#### Request parameters
+
+| Parameter      | Description                          | Param Type   | DataType                              | Required |
+| :------------- | :----------------------------------- | :----------- | :------------------------------------ | :------- |
+| resourceSetId  | id of the resource set               | URL          | String                                | TRUE     |
+
+#### Response parameters
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+#### Request example
+
+```bash
+curl -v -X DELETE \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+```
+
+#### Response example
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+### Resource operations
+These help adding, removing and listing of resources within a resource set
+
+#### Add more resources
+<ApiOperation method="patch" url="/api/v1/iam/resource-sets/${resourceSetId}/resources" />
+
+Add more resources to a resource set
+
+##### Request parameters
+
+| Parameter      | Description                                                                       | Param Type   | DataType     | Required |
+| :------------- | :----------------------------------------------------------------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set                                                         | URL          | String       | TRUE     |
+| additions      | the endpoints referencing the resources to be included in the new resource set | Body         | Array of URL | TRUE     |
+
+##### Response parameters
+
+The following `_links` are returned:
+* `resources` gets a paginable list of resources included in the set
+* `resource-set` gets the updated resource set
+
+##### Request example
+
+```bash
+curl -v -X PATCH \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+      "additions": [
+        "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3", // a group
+        "https://${yourOktaDomain}/api/v1/groups/00gu67DU2qNCjNZYO0g3/users", // users within a group
+      ]
+    }' "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+```
+
+##### Response example
+
+```json
+{
+  "_links": {
+    "resources": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    }
+  }
+}
+```
+
+#### List resources
+<ApiOperation method="get" url="/api/v1/iam/resource-sets/${resourceSetId}/resources" />
+
+List resources that make up a resource set
+
+##### Request parameters
+
+| Parameter   | Description                                                                       | Param Type   | DataType     | Required |
+| :------------- | :---------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set  | URL          | String       | TRUE     |
+
+##### Response parameters
+
+A paginated array of [resources](#resource-object)
+
+##### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources"
+```
+
+##### Response example
+
+```json
+{
+  "resources": [
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+        }
+      }
+    },
+    {
+      "id": "ire106riDrTYl4qA70g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00gu67DU2qNCjNZYO0g3/users"
+        }
+      }
+    },
+    {
+      "id": "irezvo4AwE2ngpMw40g3",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/users"
+        }
+      }
+    },
+    {
+      "id": "irezvn1ZZxLSIBM2J0g3",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups"
+        }
+      }
+    }
+  ],
+  "_links": {
+    "next": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources?after=irezvn1ZZxLSIBM2J0g3"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    }
+  }
+}
+```
+
+#### Delete a resource
+<ApiOperation method="delete" url="/api/v1/iam/resource-sets/${resourceSetId}/resources/${resourceId}" />
+
+Remove a resource from a resource set
+
+##### Request parameters
+
+| Parameter      | Description                             | Param Type   | DataType     | Required |
+| :------------- | :-------------------------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set                  | URL          | String       | TRUE     |
+| resourceId     | id of the resource within resource set  | URL          | String       | TRUE     |
+
+`resourceId` is the id obtained when [listing resources within resource set](#list-resources). For example, if the resource object was:
+```json
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+        }
+      }
+    }
+```
+`ire106sQKoHoXXsAe0g4` could be used as `resourceId` to remove the groups from list of resources in the set.
+
+##### Response parameters
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+##### Request example
+
+```bash
+curl -v -X DELETE \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/resources/ire106sQKoHoXXsAe0g4"
+```
+
+##### Response example
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+## Custom role assignment operations
+<ApiLifecycle access="beta" />
+These operations allow the assignment and unassignment of custom roles. This is done by creating a binding.
+A binding is a map withe the key being a role and value being a list of users/groups that get the role.
+
+### Create a new binding
+<ApiOperation method="post" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings" />
+
+Assign a custom role by creating a binding between the role and the admin targetting an existing resource set.
+
+#### Request parameters
+
+| Parameter      | Description                                                   | Param Type    | DataType       | Required |
+| :------------- | :------------------------------------------------------------ | :------------ | :------------- | :------- |
+| role           | id of the role                                                | Body          | String         | TRUE     |
+| members        | hrefs pointing to user(s) and/or group(s) receiving the role  | Body          | Array of hrefs | TRUE     |
+
+#### Response parameters
+
+The following `_links` are returned:
+* `self` gets this role's binding within the resource set
+* `bindings` get a paginable list of role bindings in the resource set
+* `resource-set` gets resource set
+
+#### Request example
+
+```bash
+curl -v -X POST \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+      "role": "cr0Yq6IJxGIr0ouum0g3",
+      "members": [
+        "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+      ]
+}' "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+```
+
+#### Response example
+
+```json
+{
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0Yq6IJxGIr0ouum0g3"
+    },
+    "bindings": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    }
+  }
+}
+```
+
+### Add more members to a binding
+<ApiOperation method="patch" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings/${roleId}/members" />
+
+Add more members to a role binding already created in a resource set.
+
+#### Request parameters
+
+| Parameter      | Description                                                           | Param Type   | DataType       | Required |
+| :------------- | :-------------------------------------------------------------------- | :----------- | :------------- | :------- |
+| resourceSetId  | id of the target resource set                                         | URL          | String         | TRUE     |
+| roleId         | the id of the role to grant                                           | URL          | String         | TRUE     |
+| additions      | Array of hrefs pointing to user(s) and/or group(s) receiving the role | Body         | Array of hrefs | TRUE     |
+
+#### Response parameters
+
+The following `_links` are returned:
+* `self` gets this role's binding within the resource set
+* `bindings` get a paginable list of role bindings in the resource set
+* `resource-set` gets resource set
+
+#### Request example
+
+```bash
+curl -v -X PATCH \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+-d '{
+      "additions": [
+        "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3", // a group
+        "https://${yourOktaDomain}/api/v1/users/00u67DU2qNCjNZYO0g3", // a user
+      ]
+    }' "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4/members"
+```
+
+#### Response example
+
+```json
+{
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0Yq6IJxGIr0ouum0g3"
+    },
+    "bindings": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    }
+  }
+}
+```
+
+### List members in a binding
+<ApiOperation method="get" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings/${roleId}/members" />
+
+Get a paginated list of members assigned to a role in a resource set
+
+#### Request parameters
+
+| Parameter      | Description                                                           | Param Type   | DataType       | Required |
+| :------------- | :-------------------------------------------------------------------- | :----------- | :------------- | :------- |
+| resourceSetId  | id of the target resource set                                         | URL          | String         | TRUE     |
+| roleId         | the id of the role to identify the binding                            | URL          | String         | TRUE     |
+
+#### Response parameters
+
+A paginated list of [members](#member-object).
+
+#### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4/members"
+```
+
+#### Response example
+
+```json
+{
+  "members": [
+    {
+      "id": "irb1qe6PGuMc7Oh8N0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/users/00uuk41Hjga5qGfQ30g3"
+        }
+      }
+    }, {
+      "id": "irb1q92TFAHzySt3x0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+        }
+      }
+    }
+  ],
+  "_links": {
+    "binding": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/${resource-set-id}/bindings/${role-id-or-name}"
+    },
+    "next": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/${resource-set-id}/bindings/${role-id-or-name}/members?after=${last-member-id}"
+    }
+  }
+}
+```
+
+### Delete a members from a binding
+<ApiOperation method="delete" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings/${roleId}/members/${memberId}" />
+
+Get a paginated list of members assigned to a role in a resource set
+
+#### Request parameters
+
+| Parameter      | Description                                                           | Param Type   | DataType       | Required |
+| :------------- | :-------------------------------------------------------------------- | :----------- | :------------- | :------- |
+| resourceSetId  | id of the target resource set                                         | URL          | String         | TRUE     |
+| roleId         | the id of the role to identify the binding                            | URL          | String         | TRUE     |
+| memberId       | the id of the member within the binding                               | URL          | String         | TRUE     |
+
+
+`memberId` is the id obtained when [listing members within binding](#list-members-in-a-binding). For example, if the member object was:
+```json
+{
+  "id": "irb1qe6PGuMc7Oh8N0g4",
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/users/00uuk41Hjga5qGfQ30g3"
+    }
+  }
+}
+```
+`irb1qe6PGuMc7Oh8N0g4` could be used as `memberId` to remove the user from list of members in the binding.
+
+#### Response parameters
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+#### Request example
+
+```bash
+curl -v -X DELETE \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4/members/irb1qe6PGuMc7Oh8N0g4"
+```
+
+#### Response example
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+### Retrieve bindings
+
+#### Get a binding by role id
+<ApiOperation method="get" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings/${roleId}" />
+
+Get a binding from a resource set by its role id
+
+##### Request parameters
+
+| Parameter      | Description             | Param Type   | DataType     | Required |
+| :------------- | :---------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set  | URL          | String       | TRUE     |
+| roleId         | id of the role          | URL          | String       | TRUE     |
+
+##### Response parameters
+
+The `id` of the role as well as the following `_links`:
+* `self` gets this role's binding within the resource set
+* `bindings` get a paginable list of role bindings in the resource set
+* `resource-set` gets resource set
+
+##### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4"
+```
+
+##### Response example
+
+```json
+{
+  "id": "cr0WxyzJxGIr0ouum0g4",
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4"
+    },
+    "members": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4/members"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    }
+  }
+}
+```
+
+#### Get all bindings in a resource set
+<ApiOperation method="get" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings" />
+
+Get all binding from a resource set
+
+##### Request parameters
+
+| Parameter      | Description             | Param Type   | DataType     | Required |
+| :------------- | :---------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set  | URL          | String       | TRUE     |
+
+##### Response parameters
+
+A paginated list of [bindings](#binding-object).
+
+##### Request example
+
+```bash
+curl -v -X GET \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+```
+
+##### Response example
+
+```json
+{
+  "roles": [
+    {
+      "id": "cr0WxyzJxGIr0ouum0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/iam/roles/cr0WxyzJxGIr0ouum0g4"
+        },
+        "members": {
+          "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4/members"
+        }
+      }
+    }
+  ],
+  "_links": {
+    "self": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings"
+    },
+    "resource-set": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g"
+    },
+    "next": {
+      "href": "https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings?after=cr0WxyzJxGIr0ouum0g4"
+    }
+  }
+}
+```
+
+### Delete a binding
+<ApiOperation method="delete" url="/api/v1/iam/resource-sets/${resourceSetId}/bindings/${roleId}" />
+
+Delete a binding of a role from a resource set
+
+#### Request parameters
+
+| Parameter      | Description             | Param Type   | DataType     | Required |
+| :------------- | :---------------------- | :----------- | :----------- | :------- |
+| resourceSetId  | id of the resource set  | URL          | String       | TRUE     |
+| roleId         | id of the role          | URL          | String       | TRUE     |
+
+#### Response parameters
+
+``` http
+HTTP/1.1 204 No Content
+```
+
+#### Request example
+
+```bash
+curl -v -X DELETE \
+-H "Accept: application/json" \
+-H "Content-Type: application/json" \
+-H "Authorization: SSWS ${api_token}" \
+"https://${yourOktaDomain}/api/v1/iam/resource-sets/iamoJDFKaJxGIr0oamd9g/bindings/cr0WxyzJxGIr0ouum0g4"
+```
+
+##### Response example
+
+``` http
+HTTP/1.1 204 No Content
 ```
 
 ## Role assignment operations
@@ -1729,3 +2387,111 @@ The following `_links` are returned:
 * `self` gets this resource set
 * `resources` gets a paginable list of resources included in this set
 * `bindings` gets a paginable list of admin role bindings assigned to this set
+
+### Resource object
+
+A resource has an id a link to the resource. Supported resources are:
+* Groups
+* All users within a group
+* All users within the org
+* All groups with the org
+The id of a resource is unique to the resource set whereas the link pointing to the resource is unique for the org. The same group if used in two resource sets will have distinct ids in each of resource sets but the same self link in both.
+
+#### Resource examples
+
+##### Group as resource
+```json
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+        }
+      }
+    }
+```
+
+##### Users of a group as resource
+```json
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3/users"
+        }
+      }
+    }
+```
+
+##### All users as resource
+```json
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/users"
+        }
+      }
+    }
+```
+
+##### All groups as resource
+```json
+    {
+      "id": "ire106sQKoHoXXsAe0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups"
+        }
+      }
+    }
+```
+### Binding object
+A binding represents the assignment of a [custom role](#custom-role-object) to a list of admins. Bindings are specific to a [resource set](#resource-set-object). There will be at max one binding object per role in a resource set.
+
+The admin list assigned to a role is made of [resource objects](#resource-object) representing either of the following types of admin assignments:
+* Directly assigned to the user
+* Assigned to a group
+
+| Property         | Description                                                     | DataType       | Nullable   | Unique   | Read Only |
+| :--------------- | :-------------------------------------------------------------- | :------------- | :--------- | :------- | :-------- |
+| id               | Id of the role granted in this binding                          | String         | FALSE      | FALSE    | FALSE     |
+| _links           | Discoverable resources related to the resource set              | [JSON HAL](http://tools.ietf.org/html/draft-kelly-json-hal-06)                                                | TRUE       | FALSE    | FALSE     |
+
+The following `_links` are returned:
+* `self` gets this binding
+* `members` gets a paginable list of members included in this binding
+
+#### Member object
+
+A member has an id and a link to the resource representing the role grantee. Supported resources are:
+* Groups
+* Users
+
+The id of a member is unique to the binding whereas the link pointing to the resource is unique for the org. The same group if used in two bindings will have distinct ids in each but the same self link in both.
+
+##### Member examples
+
+###### Group as member
+```json
+    {
+      "id": "irb1q92TFAHzySt3x0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/groups/00guaxWZ0AOa5NFAj0g3"
+        }
+      }
+    }
+```
+
+##### User as member
+```json
+    {
+      "id": "irb1qe6PGuMc7Oh8N0g4",
+      "_links": {
+        "self": {
+          "href": "https://${yourOktaDomain}/api/v1/users/00uuk41Hjga5qGfQ30g3"
+        }
+      }
+    }
+```
